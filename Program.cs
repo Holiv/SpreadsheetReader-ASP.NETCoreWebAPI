@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using SpreadSheetReader.Data;
+using SpreadSheetReader.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
