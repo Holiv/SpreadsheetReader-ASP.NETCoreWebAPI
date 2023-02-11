@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Dapper.Contrib.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
@@ -31,6 +33,7 @@ namespace SpreadSheetReader.Controllers
         [HttpPost]
         public async Task<IActionResult> PostOrdersFromFile(IFormFile file)
         {
+            /*
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             using (ExcelPackage package = new ExcelPackage(file.OpenReadStream()))
@@ -42,27 +45,49 @@ namespace SpreadSheetReader.Controllers
 
                 for (int row = 2; row <= rowCount; row++)
                 {
-                    var data = GetSeparetedDate(worksheet.Cells[row, 3].Value.ToString());
-
-                    Order order = new Order()
+                    var data = await GetSeparetedDate(worksheet.Cells[row, 3].Value.ToString());
+                    try
                     {
-                        Id = new Guid(),
-                        Code = long.Parse(worksheet.Cells[row, 1].Value.ToString()),
-                        Category = worksheet.Cells[row, 2].Value.ToString(),
-                        Date = new DateTime(data.year, data.month, data.day),
-                        Quantity = int.Parse(worksheet.Cells[row, 4].Value.ToString()),
-                        Value = double.Parse(worksheet.Cells[row, 5].Value.ToString(), CultureInfo.InvariantCulture)
-                    };
-                    await _ordersDbContext.Orders.AddAsync(order);
-                    await _ordersDbContext.SaveChangesAsync();
+                        Order order = new Order()
+                        {
+                            Id = new Guid(),
+                            Code = long.Parse(worksheet.Cells[row, 1].Value.ToString()),
+                            Category = worksheet.Cells[row, 2].Value.ToString(),
+                            Date = new DateTime(data.year, data.month, data.day),
+                            Quantity = int.Parse(worksheet.Cells[row, 4].Value.ToString()),
+                            Value = double.Parse(worksheet.Cells[row, 5].Value.ToString(), CultureInfo.InvariantCulture)
+                        };
+                        await _ordersDbContext.Orders.AddAsync(order);
+
+                    }
+                    catch (Exception ex)
+                    {
+                        return BadRequest(ex);
+                    }
+
                 }
             }
+            */
 
+            var streamFile = FileToStream(file);
+
+            List<Order> orders = GetObjectOrders(streamFile);
+
+            SaveOrders(orders);
+
+            /*foreach(Order order in orders)
+            {
+                await _ordersDbContext.Orders.AddAsync(order);
+            }
+            
+            await _ordersDbContext.SaveChangesAsync();
+            */
             return Ok(file);
         }
+
         //Método para testes
         [HttpPost("/mockpost")]
-        public IActionResult MockPostOrdersFromFile(IFormFile file)
+        public async Task<IActionResult> MockPostOrdersFromFile(IFormFile file)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
@@ -89,9 +114,9 @@ namespace SpreadSheetReader.Controllers
                     };
                     orders.Add(order);
                 }
-             _orders = orders;
+                _orders = orders;
             }
-            
+
             return Ok(file);
         }
 
@@ -125,7 +150,7 @@ namespace SpreadSheetReader.Controllers
         [HttpGet("month")]
         public async Task<IActionResult> GetByMonth(int month)
         {
-            List<Order> orders = await _ordersDbContext.Orders.Where(order => order.Date.Month== month).ToListAsync();
+            List<Order> orders = await _ordersDbContext.Orders.Where(order => order.Date.Month == month).ToListAsync();
             return Ok(orders);
         }
 
@@ -136,10 +161,10 @@ namespace SpreadSheetReader.Controllers
             switch (trimestre)
             {
                 case 1:
-                     orders = await _ordersDbContext.Orders.Where(order => order.Date.Month >= 1 && order.Date.Month <= 3).ToListAsync();
+                    orders = await _ordersDbContext.Orders.Where(order => order.Date.Month >= 1 && order.Date.Month <= 3).ToListAsync();
                     return Ok(orders);
                 case 2:
-                     orders = await _ordersDbContext.Orders.Where(order => order.Date.Month >= 4 && order.Date.Month <= 6).ToListAsync();
+                    orders = await _ordersDbContext.Orders.Where(order => order.Date.Month >= 4 && order.Date.Month <= 6).ToListAsync();
                     return Ok(orders);
                 case 3:
                     orders = await _ordersDbContext.Orders.Where(order => order.Date.Month >= 7 && order.Date.Month <= 9).ToListAsync();
@@ -150,7 +175,7 @@ namespace SpreadSheetReader.Controllers
                 default:
                     return BadRequest(nameof(trimestre));
             }
-            
+
         }
 
         [HttpGet("dcode")]
@@ -159,6 +184,7 @@ namespace SpreadSheetReader.Controllers
             List<long> orders = await _ordersDbContext.Orders.Select(order => order.Code).Distinct().ToListAsync();
             return Ok(orders);
         }
+
         [HttpGet("dcategory")]
         public async Task<IActionResult> DistinctByCategory()
         {
@@ -175,13 +201,63 @@ namespace SpreadSheetReader.Controllers
             return Ok(month);
         }
 
-        private (int day, int month, int year) GetSeparetedDate(string date)
+        // --- Side functions
+        private static (int day, int month, int year) GetSeparetedDate(string date)
         {
-           int day = int.Parse(date.Substring(0, 2));
-           int month = int.Parse(date.Substring(3, 2));
-           int year = int.Parse(date.Substring(6, 4));
-           //string formatedDate = $"{month}/{day}/{year}";
-           return (day, month, year);
+            int day = int.Parse(date.Substring(0, 2));
+            int month = int.Parse(date.Substring(3, 2));
+            int year = int.Parse(date.Substring(6, 4));
+
+            return (day, month, year);
+        }
+
+        private static List<Order> GetObjectOrders(Stream file)
+        {
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
+            List<Order> orders = new List<Order>();
+
+            using (ExcelPackage package = new ExcelPackage(file))       
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
+                //int colCount = worksheet.Dimension.End.Column;
+                int rowCount = worksheet.Dimension.End.Row;
+
+                for (int row = 2; row <= rowCount; row++)
+                {
+                    var date = GetSeparetedDate(worksheet.Cells[row, 3].Value.ToString());
+
+                    orders.Add(new Order()
+                    {
+                        Id = Guid.NewGuid(),
+                        Code = long.Parse(worksheet.Cells[row, 1].Value.ToString()),
+                        Category = worksheet.Cells[row, 2].Value.ToString(),
+                        Date = new DateTime(date.year, date.month, date.day),
+                        Quantity = int.Parse(worksheet.Cells[row, 4].Value.ToString()),
+                        Value = double.Parse(worksheet.Cells[row, 5].Value.ToString(), CultureInfo.InvariantCulture)
+                    });
+                }
+            }
+            return orders;
+        }
+
+        private Stream FileToStream(IFormFile file)
+        {
+            using (var stream = new MemoryStream())
+            {
+                file.CopyTo(stream);
+
+                var byteArray = stream.ToArray();
+
+                return new MemoryStream(byteArray);
+            }
+        }
+
+        private static void SaveOrders(List<Order> orders)
+        {
+            using (var connection = new SqlConnection("Data Source=ssreader-azuredb.database.windows.net;Initial Catalog=SSROrdersDb; User Id=ssreader-helton;Password=@Bankai13"))
+            {
+                connection.Insert(orders);
+            }
         }
     }
 }
