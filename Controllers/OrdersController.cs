@@ -31,99 +31,15 @@ namespace SpreadSheetReader.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> PostOrdersFromFile(IFormFile file)
+        public IActionResult PostOrdersFromFile(IFormFile file)
         {
-            /*
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-            using (ExcelPackage package = new ExcelPackage(file.OpenReadStream()))
-            {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                //int colCount = worksheet.Dimension.End.Column;
-                int rowCount = worksheet.Dimension.End.Row;
-                List<Order> orders = new List<Order>();
-
-                for (int row = 2; row <= rowCount; row++)
-                {
-                    var data = await GetSeparetedDate(worksheet.Cells[row, 3].Value.ToString());
-                    try
-                    {
-                        Order order = new Order()
-                        {
-                            Id = new Guid(),
-                            Code = long.Parse(worksheet.Cells[row, 1].Value.ToString()),
-                            Category = worksheet.Cells[row, 2].Value.ToString(),
-                            Date = new DateTime(data.year, data.month, data.day),
-                            Quantity = int.Parse(worksheet.Cells[row, 4].Value.ToString()),
-                            Value = double.Parse(worksheet.Cells[row, 5].Value.ToString(), CultureInfo.InvariantCulture)
-                        };
-                        await _ordersDbContext.Orders.AddAsync(order);
-
-                    }
-                    catch (Exception ex)
-                    {
-                        return BadRequest(ex);
-                    }
-
-                }
-            }
-            */
-
             var streamFile = FileToStream(file);
 
-            List<Order> orders = GetObjectOrders(streamFile);
+            _orders = GetObjectOrders(streamFile);
 
-            SaveOrders(orders);
-
-            /*foreach(Order order in orders)
-            {
-                await _ordersDbContext.Orders.AddAsync(order);
-            }
-            
-            await _ordersDbContext.SaveChangesAsync();
-            */
-            return Ok(file);
-        }
-
-        //Método para testes
-        [HttpPost("/mockpost")]
-        public async Task<IActionResult> MockPostOrdersFromFile(IFormFile file)
-        {
-            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-            using (ExcelPackage package = new ExcelPackage(file.OpenReadStream()))
-            {
-                ExcelWorksheet worksheet = package.Workbook.Worksheets[0];
-                int colCount = worksheet.Dimension.End.Column;
-                int rowCount = worksheet.Dimension.End.Row;
-                List<Order> orders = new List<Order>();
-
-                for (int row = 2; row <= rowCount; row++)
-                {
-
-                    var data = GetSeparetedDate(worksheet.Cells[row, 3].Value.ToString());
-
-                    Order order = new Order()
-                    {
-                        Id = new Guid(),
-                        Code = long.Parse(worksheet.Cells[row, 1].Value.ToString()),
-                        Category = worksheet.Cells[row, 2].Value.ToString(),
-                        Date = new DateTime(data.year, data.month, data.day),
-                        Quantity = int.Parse(worksheet.Cells[row, 4].Value.ToString()),
-                        Value = double.Parse(worksheet.Cells[row, 5].Value.ToString())
-                    };
-                    orders.Add(order);
-                }
-                _orders = orders;
-            }
+            SaveOrders(_orders);
 
             return Ok(file);
-        }
-
-        [HttpGet("/mockget")]
-        public IActionResult GetOrdersFromFile()
-        {
-            return Ok(_orders);
         }
 
         [HttpDelete]
@@ -202,13 +118,13 @@ namespace SpreadSheetReader.Controllers
         }
 
         // --- Side functions
-        private static (int day, int month, int year) GetSeparetedDate(string date)
+        private static DateTime GetSeparetedDate(string date)
         {
             int day = int.Parse(date.Substring(0, 2));
             int month = int.Parse(date.Substring(3, 2));
-            int year = int.Parse(date.Substring(6, 4));
+            int year = int.Parse(date.Substring(6, 4)); 
 
-            return (day, month, year);
+            return DateTime.Parse($"{year}/{day}/{month} 00:00:00"); ;
         }
 
         private static List<Order> GetObjectOrders(Stream file)
@@ -231,7 +147,7 @@ namespace SpreadSheetReader.Controllers
                         Id = Guid.NewGuid(),
                         Code = long.Parse(worksheet.Cells[row, 1].Value.ToString()),
                         Category = worksheet.Cells[row, 2].Value.ToString(),
-                        Date = new DateTime(date.year, date.month, date.day),
+                        Date = date,
                         Quantity = int.Parse(worksheet.Cells[row, 4].Value.ToString()),
                         Value = double.Parse(worksheet.Cells[row, 5].Value.ToString(), CultureInfo.InvariantCulture)
                     });
