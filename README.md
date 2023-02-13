@@ -27,7 +27,8 @@ Repositório referente ao Back-End da aplicação.
 
 ## <p id="#desafio">O Desafio</p>
 
-1. Importação dos dados no banco de dados.
+1. Importação dos dados no banco de dados. [Utilize essa planilha para testar a aplicação](https://github.com/Holiv/SpreadsheetReader-ASP.NETCoreWebAPI/files/10725461/sheet_dummy_data.xlsx)
+
 2. Listagem paginada mostrando os campos das planilhas (soma).
 3. Filtros por mês, código cliente, e categoria.
 4. Mostrar as informações agrupadas por trimestre (se possível um gráfico).
