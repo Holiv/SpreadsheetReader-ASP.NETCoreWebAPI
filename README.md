@@ -1,4 +1,4 @@
-# <img id='start' width='38px' src='./src/assets/img/logoiconwbg.png'> SpreadsheetReader 
+# <img id='start' width='38px' href='https://spreadsheet-reader.vercel.app/assets/img/logoiconwbg.png'> SpreadsheetReader 
 
 ## ![Vercel](https://vercelbadge.vercel.app/api/holiv/SpreadsheetReader-Angular) [Accessar aplicação](https://spreadsheet-reader.vercel.app/)
 
