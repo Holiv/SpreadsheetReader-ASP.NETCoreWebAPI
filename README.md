@@ -1,28 +1,36 @@
-# <p id="start">SpreadsheetReader</p>
-### AplicaÁ„o desenvolvida como desafio da empresa AstÈria.
+# <img id='start' width='38px' src='./src/assets/img/logoiconwbg.png'> SpreadsheetReader 
 
-- <a href="#intro">IntroduÁ„o</a>
+## ![Vercel](https://vercelbadge.vercel.app/api/holiv/SpreadsheetReader-Angular) [Accessar aplica√ß√£o](https://spreadsheet-reader.vercel.app/)
+
+<i>Este reposit√≥rio √© referente ao Backend desta aplica√ß√£o. Para visualizar os dados referente ao Frontend acessar o respectivo repositori√≥rio clicando [aqui](https://github.com/Holiv/SpreadsheetReader-Angular)</i>
+
+### Aplica√ß√£o desenvolvida como desafio da empresa Ast√©ria.
+
+- <a href="#intro">Introdu√ß√£o</a>
 - <a href="#desafio">O Desafio</a>
 - <a href="#tech">Tecnologias</a>
-- <a href="#apli">A AplicaÁ„o</a>
+- <a href="#apli">A Aplica√ß√£o</a>
   - <a href="#inicio">Inicio</a>
   - <a href="#rec">Recebendo Arquivos</a>
-  - <a href="#manip">ManipulaÁ„o de Dados</a>
+  - <a href="#manip">Manipula√ß√£o de Dados</a>
+  - <a href='#filtro'>Filtros</a>
 - <a href="#emp">A Empresa</a>
 
 ---
-## <p id="#intro">IntroduÁ„o</p>
+## <p id="#intro">Introdu√ß√£o</p>
 
-O SpreadsheetReader, como decidi nomea-lo, tem o objetivo de importar um arquivo em Excel, com uma listagem de pedidos, extrair esses dados, importa-los para o banco de dados para que ent„o esses dados possam ser consumidos e manipulados pelo usu·rio atravÈs de uma interface.
+O SpreadsheetReader, como decidi nomea-lo, tem o objetivo de importar um arquivo em Excel, com uma listagem de pedidos, extrair esses dados, importa-los para o banco de dados para que ent√£o esses dados possam ser consumidos e manipulados pelo usu√°rio atrav√©s de uma interface.
 
-RepositÛrio referente ao Back-End da aplicaÁ„o.
+![spreadgif](https://user-images.githubusercontent.com/97141987/218546270-14577d20-4550-46dc-92cf-4a943c90714e.gif)
+
+Reposit√≥rio referente ao Back-End da aplica√ß√£o.
 
 ## <p id="#desafio">O Desafio</p>
 
-1. ImportaÁ„o dos dados no banco de dados.
+1. Importa√ß√£o dos dados no banco de dados.
 2. Listagem paginada mostrando os campos das planilhas (soma).
-3. Filtros por mÍs, cÛdigo cliente, e categoria.
-4. Mostrar as informaÁıes agrupadas por trimestre (se possÌvel um gr·fico).
+3. Filtros por m√™s, c√≥digo cliente, e categoria.
+4. Mostrar as informa√ß√µes agrupadas por trimestre (se poss√≠vel um gr√°fico).
 ## <p id="#tech">Tecnologias</p>
 1. ASP.NET Core Web API
 2. Entity Framework Core
@@ -30,26 +38,35 @@ RepositÛrio referente ao Back-End da aplicaÁ„o.
 4. EPPlus
 5. Postman (para testes)
 
-## <p id="#apli">A AplicaÁ„o</p>
+## <p id="#apli">A Aplica√ß√£o</p>
 ### <p id="#inicio">Inicio</p>
-A AplicaÁ„o È iniciada com uma interface simples, que solicita ao usu·rio o upload da planilha a ser utilizada para a extraÁ„o dos dados
+A Aplica√ß√£o √© iniciada com uma interface simples, que solicita ao usu√°rio o upload da planilha a ser utilizada para a extra√ß√£o dos dados
 
 ### <p id="#rec">Recebendo Arquivos</p>
-O arquivo È recebido atravÈs de uma requisiÁ„o Http do tipo POST, onde ser· tratado por esta API.
-O metodo chamado È respons·vel por receber o arquivo e utilizar a extens„o EPPlus para extrair os dados e ent„o instanciar novos objetos a partir desses dados. Cada objeto ent„o È enviado ao banco de dados atravÈs da conexÁ„o feita pelo Entity Framework Core.
+O arquivo √© recebido atrav√©s de uma requisi√ß√£o Http do tipo POST, onde ser√° tratado por esta API.
+O metodo chamado √© respons√°vel por receber o arquivo e utilizar a extens√£o EPPlus para extrair os dados e ent√£o instanciar novos objetos a partir desses dados. Cada objeto ent√£o √© enviado ao banco de dados atrav√©s da conex√ß√£o feita pelo Entity Framework Core.
 
-Quando uma requisiÁ„o do tipo Get È feita pelo front-end, esses dados s„o recuperados e enviados para serem renderizados. Para mais informaÁıes sobre a aplicaÁ„o front-end, acessar o link https://github.com/Holiv/SpreadsheetReader-Angular
+Quando uma requisi√ß√£o do tipo Get √© feita pelo front-end, esses dados s√£o recuperados e enviados para serem renderizados. Para mais informa√ß√µes sobre a aplica√ß√£o front-end, acessar o link https://github.com/Holiv/SpreadsheetReader-Angular
 
-### <p id="#manip">ManipulaÁ„o de dados</p>
-Uma vez que a planilha È enviada ao banco de dados, podemos solicitar o carregamento dos dados na pagina.
-Foram utilizados componentes e serviÁos do Angular para criar uma requisiÁ„o Http do tipo GET e carregar os dados na pagina. 
-AtravÈs da utilizaÁ„o de rotas os elementos s„o alterados sem a necessidade de um Reload na p·gina.
+### <p id="#manip">Manipula√ß√£o de dados</p>
+Uma vez que a planilha √© enviada ao banco de dados, podemos solicitar o carregamento dos dados na pagina.
+Foram utilizados componentes e servi√ßos do Angular para criar uma requisi√ß√£o Http do tipo GET e carregar os dados na pagina. 
+Atrav√©s da utiliza√ß√£o de rotas os elementos s√£o alterados sem a necessidade de um Reload na p√°gina.
+
+### <p id="#filtro">Filtros</p>
+A Aplica√ß√£o possui filtragem de dados por Codigo do Cliente, Categoria do Produto, M√™s da opera√ß√£o e Trimestre, sendo o trimestre mostrado em forma de gr√°fico.
+
+Os filtros podem ser selecionados atrav√©s de lista de opc√µes pr√©-carregadas com valores existentes. Por exemplo, se em um determinado m√™s nenhuma opera√ß√£o ocorreu, esse m√™s n√£o estar√° dispon√≠vel na listagem de filtragem por m√™s.
+
+O mesmo ocorre para a inclu√£o de novos dados. Se um novo pedido for feito com um novo c√≥digo de cliente, o devido c√≥digo ser√° carregado automaticamente como op√ß√£o de sele√ß√£o para filtragem do usu√°rio.
+
+Essa funcionalidade √© poss√≠vel atrav√©s de endpoints desta API que retornam valores distintos para os campos correspondentes. Quando a aplica√ß√£o √© carregada, os endpoints s√£o acessados retornando os valores distintos existentes.
 
 ## <p id="#carr">A Empresa</p>
-Desde 2005 no mercado, a AstÈria se destaca por ser uma empresa diferenciada, com a capacidade de compreender as exigÍncias e particularidades de cada projeto, e oferecer soluÁıes exclusivas e inovadoras.
+Desde 2005 no mercado, a Ast√©ria se destaca por ser uma empresa diferenciada, com a capacidade de compreender as exig√™ncias e particularidades de cada projeto, e oferecer solu√ß√µes exclusivas e inovadoras.
 
-Dirigida por profissionais multidisciplinares e com larga experiÍncia no universo digital, acreditamos que a tecnologia deve servir e auxiliar pessoas a alcanÁarem melhores resultados.
+Dirigida por profissionais multidisciplinares e com larga experi√™ncia no universo digital, acreditamos que a tecnologia deve servir e auxiliar pessoas a alcan√ßarem melhores resultados.
 
-Ao longo dos 17 anos de atuaÁ„o, a AstÈria desenvolveu importantes projetos para grandes empresas de diversos segmentos. Os projetos voltados para Trade Marketing ganharam destaque em alguns clientes devido aos excelentes resultados. Passamos ent„o a nos identificar cada vez mais com estes projetos e assim agregar ainda mais valor aos nossos clientes.
+Ao longo dos 17 anos de atua√ß√£o, a Ast√©ria desenvolveu importantes projetos para grandes empresas de diversos segmentos. Os projetos voltados para Trade Marketing ganharam destaque em alguns clientes devido aos excelentes resultados. Passamos ent√£o a nos identificar cada vez mais com estes projetos e assim agregar ainda mais valor aos nossos clientes.
 #### <a href="#start">Voltar ao Inicio</a>
 ---
