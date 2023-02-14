@@ -39,7 +39,16 @@ namespace SpreadSheetReader.Controllers
             return Ok(ChunkOrders);
         }
 
-        [HttpPost]
+        [HttpGet("chunk")]
+        public async Task<IActionResult> GetChunckOrders()
+        {
+            _orders = await _ordersDbContext.Orders.OrderBy(order => order.Code).ToListAsync();
+            List<Order[]> ChunkOrders = _orders.Chunk(20).ToList();
+
+            return Ok(ChunkOrders);
+        }
+
+       [HttpPost]
         public IActionResult PostOrdersFromFile(IFormFile file)
         {
             var streamFile = FileToStream(file);
