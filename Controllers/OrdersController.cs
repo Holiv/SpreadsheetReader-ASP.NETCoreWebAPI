@@ -39,15 +39,6 @@ namespace SpreadSheetReader.Controllers
             return Ok(ChunkOrders);
         }
 
-        [HttpGet("chunk")]
-        public async Task<IActionResult> GetChunckOrders()
-        {
-            _orders = await _ordersDbContext.Orders.OrderBy(order => order.Code).ToListAsync();
-            List<Order[]> ChunkOrders = _orders.Chunk(20).ToList();
-
-            return Ok(ChunkOrders);
-        }
-
        [HttpPost]
         public IActionResult PostOrdersFromFile(IFormFile file)
         {
@@ -142,8 +133,7 @@ namespace SpreadSheetReader.Controllers
             int month = int.Parse(date.Substring(3, 2));
             int year = int.Parse(date.Substring(6, 4)); 
 
-            //return DateTime.Parse($"{year}/{day}/{month} 00:00:00");
-            return DateTime.Now;
+            return DateTime.Parse($"{year}/{day}/{month} 00:00:00");
         }
 
         private static List<Order> GetObjectOrders(Stream file)
